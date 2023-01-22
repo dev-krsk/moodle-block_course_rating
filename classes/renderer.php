@@ -8,6 +8,17 @@ require_once(__DIR__ . '/../lib.php');
 
 class renderer
 {
+    public static function get_star()
+    {
+        return <<<HTML
+
+<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"  xmlns:xlink="http://www.w3.org/1999/xlink" width="32" height="32">
+  <path d="M9.5 14.25l-5.584 2.936 1.066-6.218L.465 6.564l6.243-.907L9.5 0l2.792 5.657 6.243.907-4.517 4.404 1.066 6.218" />
+</svg>
+HTML;
+
+    }
+
     public static function text_for_course($course)
     {
         $instance = block_course_rating_get_instance_block($course->id);
@@ -24,7 +35,8 @@ class renderer
         return self::get_svg($rating->percent);
     }
 
-    public static function get_svg($percent) {
+    public static function get_svg($percent)
+    {
         return <<<HTML
 <svg viewBox="0 0 80 20" xmlns="http://www.w3.org/2000/svg"  xmlns:xlink="http://www.w3.org/1999/xlink">
   <symbol id="stars-full-star" viewBox="0 0 102 18">

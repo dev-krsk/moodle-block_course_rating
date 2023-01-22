@@ -46,6 +46,65 @@ $PAGE->navbar->add($title);
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('vote:heading', 'block_course_rating'), 3);
 
+echo <<<HTML
+<style>
+  .course-content input[type=radio] {
+    display: none;
+  }
+  
+  .course-content label {
+    transition: all 0.2s ease;
+    fill: #333;
+  }
+  
+  .course-content label.hover {
+    fill: #d48a03 !important;
+  }
+  
+  .course-content label.selected {
+    fill: orange;
+  }
+</style>
+<script>
+$(document).ready(function() {  
+  $('.course-content').on('change', 'input[type=radio]', function (e) {
+    let context = $(this);
+    
+    context.closest('fieldset').find('label').removeClass('selected');
+    context.closest('fieldset').find('label').each(function() {
+      let label = $(this); 
+      
+      label.addClass('selected');
+      
+      if (label.find('input').is(":checked")) {
+        return false;  
+      }
+    });
+  });
+  
+  $('.course-content label').hover(function (e) {          
+    let context = $(this);
+    context.closest('fieldset').find('label').removeClass('hover');
+    context.addClass('hover');
+    
+    context.closest('fieldset').find('label').each(function() {
+      let label = $(this); 
+      
+      label.addClass('hover');
+      
+      if (context.find('input').val() === label.find('input').val()) {
+        return false;  
+      }
+    });
+  }, function (e) {   
+    let context = $(this);
+    context.closest('fieldset').find('label').removeClass('hover');
+  });
+});
+</script>
+HTML;
+
+
 echo html_writer::start_div('course-content');
 
 $mform = new block_course_rating_vote_form(null, [

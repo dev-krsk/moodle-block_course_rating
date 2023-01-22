@@ -83,13 +83,15 @@ class block_course_rating_vote_form extends moodleform
 
         $mform = $this->_form;
 
+        $star = \block_course_rating\renderer::get_star();
+
         foreach (block_course_rating_get_questions($this->template['templateid']) as $key => $question) {
             $radioarray = array();
-            $radioarray[] = $mform->createElement('radio', 'question' . $key, '', 1, 1, []);
-            $radioarray[] = $mform->createElement('radio', 'question' . $key, '', 2, 2, []);
-            $radioarray[] = $mform->createElement('radio', 'question' . $key, '', 3, 3, []);
-            $radioarray[] = $mform->createElement('radio', 'question' . $key, '', 4, 4, []);
-            $radioarray[] = $mform->createElement('radio', 'question' . $key, '', 5, 5, []);
+            $radioarray[] = $mform->createElement('radio', 'question' . $key, '', $star, 1, []);
+            $radioarray[] = $mform->createElement('radio', 'question' . $key, '', $star, 2, []);
+            $radioarray[] = $mform->createElement('radio', 'question' . $key, '', $star, 3, []);
+            $radioarray[] = $mform->createElement('radio', 'question' . $key, '', $star, 4, []);
+            $radioarray[] = $mform->createElement('radio', 'question' . $key, '', $star, 5, []);
             $mform->addGroup($radioarray, 'question' . $key, $question, array(' '), false);
             $mform->addRule('question' . $key, get_string('required'), 'required');
         }
