@@ -119,11 +119,13 @@ if ($mform->is_cancelled()) {
 } else if ($data = $mform->get_data()) {
     $answers = [];
 
+    $now = time();
+
     if (!empty($data->feedback)) {
         $feedback = new stdClass();
         $feedback->courseid = $COURSE->id;
         $feedback->usercreated = $USER->id;
-        $feedback->timecreated = time();
+        $feedback->timecreated = $now;
         $feedback->feedback = $data->feedback;
 
         $DB->insert_record('course_rating_feedback', $feedback);
@@ -134,7 +136,7 @@ if ($mform->is_cancelled()) {
         $answer->course_rating_templates_id = $templateid;
         $answer->courseid = $COURSE->id;
         $answer->usercreated = $USER->id;
-        $answer->timecreated = time();
+        $answer->timecreated = $now;
         $answer->order_question = $key;
         $answer->user_answer = $data->{"question$key"};
 

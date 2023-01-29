@@ -16,3 +16,10 @@ $string['vote'] = 'Анкета голосования';
 $string['vote:heading'] = 'Пожалуйста оцените качество данного электронного онлайн курса';
 $string['vote:feedback'] = 'Отзыв';
 $string['rating'] = 'Рейтинг курса: {$a->value} ({$a->count})';
+
+$string['votes'] = 'Анкеты голосования';
+$string['votes:heading'] = 'Просмотр анкет голосования';
+$string['votes:table:date'] = 'Дата голосования';
+$string['votes:table:fio'] = 'ФИО';
+$string['votes:table:answers'] = 'Ответы на вопросы';
+$string['votes:table:feedback'] = 'Отзыв';

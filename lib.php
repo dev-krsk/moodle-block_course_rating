@@ -95,19 +95,21 @@ function block_course_rating_get_answers($courseid, $templateid)
 
     $sql = <<<SQL
 select min(a.id)                            as                             id,
-       min(a.timecreated)                   as                             timecreated,
+       a.timecreated                        as                             timecreated,
+       a.usercreated                        as                             userid,
        concat(u.lastname, ' ', u.firstname) as                             fio,
        group_concat(a.user_answer order by a.order_question separator '#') answers,
        f.feedback
-from mdl1_course_rating_templates t
-         join mdl1_course_rating_answers a on a.course_rating_templates_id = t.id
-         left join mdl1_user u on u.id = a.usercreated
-         left join mdl1_course_rating_feedback f
+from {course_rating_templates} t
+         join {course_rating_answers} a on a.course_rating_templates_id = t.id
+         left join {user} u on u.id = a.usercreated
+         left join {course_rating_feedback} f
                    on f.courseid = a.courseid and f.usercreated = a.usercreated
 where t.id = :templateid
   and a.courseid = :courseid
 
-group by a.usercreated, f.feedback
+group by a.timecreated, a.usercreated, f.feedback
+order by 2 desc
 SQL;
 
 
@@ -131,6 +133,47 @@ SQL;
     }
 
     return $data;
+}
+
+
+function block_course_rating_get_answers_paging($courseid, $templateid, $page = 0, $offset = 25)
+{
+
+    global $DB;
+
+    $sql = <<<SQL
+select min(a.id)                            as                             id,
+       a.timecreated                        as                             timecreated,
+       a.usercreated                        as                             userid,
+       concat(u.lastname, ' ', u.firstname) as                             fio,
+       group_concat(a.user_answer order by a.order_question separator '#') answers,
+       f.feedback
+ from {course_rating_templates} t
+         join {course_rating_answers} a on a.course_rating_templates_id = t.id
+         left join {user} u on u.id = a.usercreated
+         left join {course_rating_feedback} f
+                   on f.courseid = a.courseid and f.usercreated = a.usercreated
+where t.id = :templateid
+  and a.courseid = :courseid
+
+group by a.timecreated, a.usercreated, f.feedback
+SQL;
+
+    $sqlCount = <<<SQL
+select count(*) from (
+    $sql
+) z
+SQL;
+
+
+    $orderby = ' order by 2 desc';
+
+    $records = $DB->get_records_sql($sql . $orderby, ['courseid' => $courseid, 'templateid' => $templateid], $page, $offset);
+
+    return array(
+        'total' => $DB->get_record_sql($sqlCount, ['courseid' => $courseid, 'templateid' => $templateid]),
+        'data' => $records
+    );
 }
 
 function block_course_rating_get_rating($templateid, $id)
@@ -294,6 +337,23 @@ function block_course_rating_render_btn_download($courseid, $returnurl)
             'courseid' => $courseid,
             'returnurl' => $returnurl,
         ]), 'Скачать результаты'),
+        ['style' => 'text-align: center']
+    );
+}
+
+function block_course_rating_render_btn_view_votes($courseid)
+{
+    global $OUTPUT;
+
+    $instance = block_course_rating_get_instance_block($courseid);
+    $template = block_course_rating_get_template_block($instance);
+
+    return html_writer::tag(
+        'div',
+        html_writer::link(new moodle_url('/blocks/course_rating/votes.php', [
+            'templateid' => $template,
+            'courseid' => $courseid,
+        ]), 'Просмотр ответов', ['class' => 'btn btn-secondary']),
         ['style' => 'text-align: center']
     );
 }

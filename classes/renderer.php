@@ -32,11 +32,13 @@ HTML;
 
         $rating = block_course_rating_get_rating($template, $course->id);
 
-        return self::get_svg($rating->percent);
+        return self::get_svg($rating->percent, $course->id);
     }
 
-    public static function get_svg($percent)
+    public static function get_svg($percent, $courseid = 0, $userid = 0, $key = 0)
     {
+        $maskId = \sprintf('c%su%sk%s', $courseid, $userid, $key);
+
         return <<<HTML
 <svg viewBox="0 0 80 20" xmlns="http://www.w3.org/2000/svg"  xmlns:xlink="http://www.w3.org/1999/xlink">
   <symbol id="stars-full-star" viewBox="0 0 102 18">
@@ -51,13 +53,13 @@ HTML;
 		<use xlink:href="#stars-full-star" transform="translate(84)" />
 	</symbol>
   
-  <mask id="mask">
+  <mask id="{$maskId}">
     <use xlink:href="#stars-all-star" fill="white" />
     <rect x="0" y="0" width="{$percent}%" height="20" fill="#000" />
   </mask>
   
   <use xlink:href="#stars-all-star" fill="orange" />
-  <use xlink:href="#stars-all-star" mask="url(#mask)" fill="#333" />
+  <use xlink:href="#stars-all-star" mask="url(#{$maskId})" fill="#333" />
 </svg>
 HTML;
     }
@@ -72,7 +74,7 @@ HTML;
 
         $content = self::get_style();
         $content .= '<div style="text-align: center; max-width: 240px; margin: 0 auto">';
-        $content .= self::get_svg($rating->percent);
+        $content .= self::get_svg($rating->percent, $course->id);
         $content .= "<p>$title</p>";
         $content .= '</div>';
 
@@ -83,6 +85,7 @@ HTML;
     {
         $content = block_course_rating_render_btn_vote($user->id, $course->id, $returnurl);
         $content .= block_course_rating_render_btn_download($course->id, $returnurl);
+        $content .= block_course_rating_render_btn_view_votes($course->id, $returnurl);
 
         return $content;
     }
